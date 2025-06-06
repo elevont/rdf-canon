@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.15.2] - 2025-06-06
+
+- Updated dependencies
+
 ## [0.15.1] - 2024-12-27
 
 - Updated `oxrdf`, `oxttl`, and `thiserror` dependencies
