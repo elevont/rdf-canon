@@ -14,7 +14,7 @@ license = "MIT"
 base16ct = { version = "0.2", features = ["alloc"] }
 digest = "0.10"
 itertools = "0.14"
-oxrdf = "0.2.4"
+oxrdf = { git = "https://github.com/elevont/oxigraph.git", default-features = false, features = ["rdf-12"] }
 sha2 = "0.10"
 thiserror = "2.0"
 tracing = "0.1"

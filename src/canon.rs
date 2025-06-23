@@ -5,8 +5,8 @@ use crate::{
 use digest::Digest;
 use itertools::Itertools;
 use oxrdf::{
-    BlankNode, Dataset, Graph, GraphName, GraphNameRef, Quad, QuadRef, Subject, SubjectRef, Term,
-    TermRef, TripleRef,
+    BlankNode, Dataset, Graph, GraphName, GraphNameRef, NamedOrBlankNode, NamedOrBlankNodeRef,
+    Quad, QuadRef, Term, TermRef, TripleRef,
 };
 use std::collections::{BTreeMap, HashMap};
 
@@ -48,7 +48,7 @@ impl CanonicalizationState {
             // 2.1) For each blank node that is a component of Q, add a reference to Q from the map
             // entry for the blank node identifier identifier in the blank node to quads map,
             // creating a new entry if necessary.
-            if let SubjectRef::BlankNode(n) = &quad.subject {
+            if let NamedOrBlankNodeRef::BlankNode(n) = &quad.subject {
                 self.blank_node_to_quads_map
                     .entry(n.as_str().to_string())
                     .or_default()
@@ -519,9 +519,10 @@ fn hash_first_degree_quads<D: Digest>(
             // 3.1.1) If any component in quad is an blank node, then serialize it using a special
             // identifier as follows:
             let subject = match &quad.subject {
-                Subject::BlankNode(bnode) => {
-                    Subject::BlankNode(replace_bnid(bnode, reference_blank_node_identifier))
-                }
+                NamedOrBlankNode::BlankNode(bnode) => NamedOrBlankNode::BlankNode(replace_bnid(
+                    bnode,
+                    reference_blank_node_identifier,
+                )),
                 s => s.clone(),
             };
             // 3.1.1) If any component in quad is an blank node, then serialize it using a special
@@ -580,14 +581,14 @@ fn hash_first_degree_quads<D: Digest>(
 }
 
 enum HashRelatedBlankNodePosition {
-    Subject,
+    NamedOrBlankNode,
     Object,
     Graph,
 }
 impl HashRelatedBlankNodePosition {
     fn serialize(&self) -> &str {
         match self {
-            Self::Subject => "s",
+            Self::NamedOrBlankNode => "s",
             Self::Object => "o",
             Self::Graph => "g",
         }
@@ -761,7 +762,7 @@ fn hash_n_degree_quads<D: Digest>(
 
         // 3.1) For each component in quad, where component is the subject, object, or graph name,
         // and it is a blank node that is not identified by identifier:
-        if let Subject::BlankNode(bnode) = &quad.subject {
+        if let NamedOrBlankNode::BlankNode(bnode) = &quad.subject {
             let bnode_id = bnode.as_str().to_string();
             if bnode_id != identifier {
                 // 3.1.1) Set hash to the result of the Hash Related Blank Node algorithm, passing
@@ -780,7 +781,7 @@ fn hash_n_degree_quads<D: Digest>(
                     &bnode_id,
                     quad,
                     &issuer,
-                    HashRelatedBlankNodePosition::Subject,
+                    HashRelatedBlankNodePosition::NamedOrBlankNode,
                 )?;
 
                 // 3.1.2) Add a mapping of hash to the blank node identifier for component to Hn,
@@ -1191,25 +1192,25 @@ mod tests {
         let u = NamedNodeRef::new("http://example.com/#u").unwrap();
         let mut input_dataset = Dataset::default();
         input_dataset.insert(QuadRef::new(
-            SubjectRef::NamedNode(p),
+            NamedOrBlankNodeRef::NamedNode(p),
             q,
             TermRef::BlankNode(e0),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::NamedNode(p),
+            NamedOrBlankNodeRef::NamedNode(p),
             r,
             TermRef::BlankNode(e1),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e0),
+            NamedOrBlankNodeRef::BlankNode(e0),
             s,
             TermRef::NamedNode(u),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e1),
+            NamedOrBlankNodeRef::BlankNode(e1),
             t,
             TermRef::NamedNode(u),
             GraphNameRef::DefaultGraph,
@@ -1246,31 +1247,31 @@ mod tests {
         let r = NamedNodeRef::new("http://example.com/#r").unwrap();
         let mut input_dataset = Dataset::default();
         input_dataset.insert(QuadRef::new(
-            SubjectRef::NamedNode(p),
+            NamedOrBlankNodeRef::NamedNode(p),
             q,
             TermRef::BlankNode(e0),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::NamedNode(p),
+            NamedOrBlankNodeRef::NamedNode(p),
             q,
             TermRef::BlankNode(e1),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e0),
+            NamedOrBlankNodeRef::BlankNode(e0),
             p,
             TermRef::BlankNode(e2),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e1),
+            NamedOrBlankNodeRef::BlankNode(e1),
             p,
             TermRef::BlankNode(e3),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e2),
+            NamedOrBlankNodeRef::BlankNode(e2),
             r,
             TermRef::BlankNode(e3),
             GraphNameRef::DefaultGraph,
@@ -1313,7 +1314,7 @@ mod tests {
         let e2 = BlankNode::default();
         let p = NamedNode::new("http://example.com/#p").unwrap();
         let quad = Quad::new(
-            Subject::BlankNode(e0),
+            NamedOrBlankNode::BlankNode(e0),
             p,
             Term::BlankNode(e2),
             GraphName::DefaultGraph,
@@ -1343,31 +1344,31 @@ mod tests {
         let r = NamedNodeRef::new("http://example.com/#r").unwrap();
         let mut input_dataset = Dataset::default();
         input_dataset.insert(QuadRef::new(
-            SubjectRef::NamedNode(p),
+            NamedOrBlankNodeRef::NamedNode(p),
             q,
             TermRef::BlankNode(e0),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::NamedNode(p),
+            NamedOrBlankNodeRef::NamedNode(p),
             q,
             TermRef::BlankNode(e1),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e0),
+            NamedOrBlankNodeRef::BlankNode(e0),
             p,
             TermRef::BlankNode(e2),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e1),
+            NamedOrBlankNodeRef::BlankNode(e1),
             p,
             TermRef::BlankNode(e3),
             GraphNameRef::DefaultGraph,
         ));
         input_dataset.insert(QuadRef::new(
-            SubjectRef::BlankNode(e2),
+            NamedOrBlankNodeRef::BlankNode(e2),
             r,
             TermRef::BlankNode(e3),
             GraphNameRef::DefaultGraph,

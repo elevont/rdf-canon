@@ -5,8 +5,8 @@ use crate::{
 };
 use digest::Digest;
 use oxrdf::{
-    BlankNode, BlankNodeRef, Dataset, Graph, GraphName, GraphNameRef, Quad, QuadRef, Subject,
-    SubjectRef, Term, TermRef, Triple, TripleRef,
+    BlankNode, BlankNodeRef, Dataset, Graph, GraphName, GraphNameRef, NamedOrBlankNode,
+    NamedOrBlankNodeRef, Quad, QuadRef, Term, TermRef, Triple, TripleRef,
 };
 use sha2::Sha256;
 use std::collections::HashMap;
@@ -754,13 +754,15 @@ pub fn relabel_triple(
 }
 
 pub fn relabel_subject(
-    s: SubjectRef,
+    s: NamedOrBlankNodeRef,
     issued_identifiers_map: &HashMap<String, String>,
-) -> Result<Subject, CanonicalizationError> {
+) -> Result<NamedOrBlankNode, CanonicalizationError> {
     match s {
-        SubjectRef::BlankNode(blank_node) => {
+        NamedOrBlankNodeRef::BlankNode(blank_node) => {
             match relabel_blank_node(blank_node, issued_identifiers_map) {
-                Ok(canonicalized_blank_node) => Ok(Subject::BlankNode(canonicalized_blank_node)),
+                Ok(canonicalized_blank_node) => {
+                    Ok(NamedOrBlankNode::BlankNode(canonicalized_blank_node))
+                }
                 Err(e) => Err(e),
             }
         }
