@@ -21,7 +21,7 @@ use std::collections::HashMap;
 /// use oxttl::NQuadsParser;
 /// use rdf_canon::canonicalize;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -62,7 +62,7 @@ pub fn canonicalize(input_dataset: &Dataset) -> Result<String, CanonicalizationE
 /// use oxttl::NTriplesParser;
 /// use rdf_canon::canonicalize_graph;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 .
 /// _:e0 <http://example.org/vocab#prev> _:e2 .
 /// _:e1 <http://example.org/vocab#next> _:e2 .
@@ -103,7 +103,7 @@ pub fn canonicalize_graph(input_graph: &Graph) -> Result<String, Canonicalizatio
 /// use oxttl::NQuadsParser;
 /// use rdf_canon::canonicalize_quads;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -151,7 +151,7 @@ pub struct CanonicalizationOptions {
 /// use rdf_canon::{canonicalize_with, CanonicalizationOptions};
 /// use sha2::Sha256;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -201,7 +201,7 @@ pub fn canonicalize_with<D: Digest>(
 /// use rdf_canon::{canonicalize_graph_with, CanonicalizationOptions};
 /// use sha2::Sha256;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 .
 /// _:e0 <http://example.org/vocab#prev> _:e2 .
 /// _:e1 <http://example.org/vocab#next> _:e2 .
@@ -251,7 +251,7 @@ pub fn canonicalize_graph_with<D: Digest>(
 /// use rdf_canon::{canonicalize_quads_with, CanonicalizationOptions};
 /// use sha2::Sha256;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
