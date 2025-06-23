@@ -742,6 +742,63 @@ pub fn relabel_quad(
     ))
 }
 
+/// Re-label blank node identifiers in the input triples
+/// according to the issued identifiers map.
+///
+/// # Examples
+///
+/// ```
+/// use oxrdf::Triple;
+/// use oxttl::NTriplesParser;
+/// use rdf_canon::relabel_triples;
+/// use std::collections::HashMap;
+/// use std::io::Cursor;
+///
+/// let input = r#"
+/// _:e0 <http://example.org/vocab#next> _:e1 .
+/// _:e0 <http://example.org/vocab#prev> _:e2 .
+/// _:e1 <http://example.org/vocab#next> _:e2 .
+/// _:e1 <http://example.org/vocab#prev> _:e0 .
+/// _:e2 <http://example.org/vocab#next> _:e0 .
+/// _:e2 <http://example.org/vocab#prev> _:e1 .
+/// "#;
+/// let issued_identifiers_map = HashMap::from([
+///     ("g".to_string(), "c14n0".to_string()),
+///     ("e0".to_string(), "c14n1".to_string()),
+///     ("e1".to_string(), "c14n2".to_string()),
+///     ("e2".to_string(), "c14n3".to_string()),
+/// ]);
+/// let expected = r#"
+/// _:c14n1 <http://example.org/vocab#next> _:c14n2 .
+/// _:c14n1 <http://example.org/vocab#prev> _:c14n3 .
+/// _:c14n2 <http://example.org/vocab#next> _:c14n3 .
+/// _:c14n2 <http://example.org/vocab#prev> _:c14n1 .
+/// _:c14n3 <http://example.org/vocab#next> _:c14n1 .
+/// _:c14n3 <http://example.org/vocab#prev> _:c14n2 .
+/// "#;
+///
+/// let input_triples: Vec<Triple> = NTriplesParser::new()
+///     .for_reader(Cursor::new(input))
+///     .map(|x| x.unwrap())
+///     .collect();
+/// let labeled_triples = relabel_triples(&input_triples, &issued_identifiers_map).unwrap();
+/// let expected_triples: Vec<Quad> = NQuadsParser::new()
+///     .for_reader(Cursor::new(expected))
+///     .map(|x| x.unwrap())
+///     .collect();
+///
+/// assert_eq!(labeled_triples, expected_triples);
+/// ```
+pub fn relabel_triples(
+    input_triples: &[Triple],
+    issued_identifiers_map: &HashMap<String, String>,
+) -> Result<Vec<Triple>, CanonicalizationError> {
+    input_triples
+        .iter()
+        .map(|q| relabel_triple(q.into(), issued_identifiers_map))
+        .collect()
+}
+
 pub fn relabel_triple(
     t: TripleRef,
     issued_identifiers_map: &HashMap<String, String>,
