@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.15.3] - 2025-06-25
+
+- Made six more `relabel_*` APIs public and refactored code (contributed by @hoijui)
+
 ## [0.15.2] - 2025-06-06
 
 - Updated dependencies
