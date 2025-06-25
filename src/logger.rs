@@ -23,7 +23,7 @@ where
         ctx: tracing_subscriber::layer::Context<'_, S>,
     ) {
         // get span name
-        let Some(span ) = ctx.span(id) else { return };
+        let Some(span) = ctx.span(id) else { return };
         let span_name = span.metadata().name();
 
         // get parent indent

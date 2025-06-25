@@ -21,7 +21,7 @@ use std::collections::HashMap;
 /// use oxttl::NQuadsParser;
 /// use rdf_canon::canonicalize;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -62,7 +62,7 @@ pub fn canonicalize(input_dataset: &Dataset) -> Result<String, CanonicalizationE
 /// use oxttl::NTriplesParser;
 /// use rdf_canon::canonicalize_graph;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 .
 /// _:e0 <http://example.org/vocab#prev> _:e2 .
 /// _:e1 <http://example.org/vocab#next> _:e2 .
@@ -103,7 +103,7 @@ pub fn canonicalize_graph(input_graph: &Graph) -> Result<String, Canonicalizatio
 /// use oxttl::NQuadsParser;
 /// use rdf_canon::canonicalize_quads;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -151,7 +151,7 @@ pub struct CanonicalizationOptions {
 /// use rdf_canon::{canonicalize_with, CanonicalizationOptions};
 /// use sha2::Sha256;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -201,7 +201,7 @@ pub fn canonicalize_with<D: Digest>(
 /// use rdf_canon::{canonicalize_graph_with, CanonicalizationOptions};
 /// use sha2::Sha256;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 .
 /// _:e0 <http://example.org/vocab#prev> _:e2 .
 /// _:e1 <http://example.org/vocab#next> _:e2 .
@@ -251,7 +251,7 @@ pub fn canonicalize_graph_with<D: Digest>(
 /// use rdf_canon::{canonicalize_quads_with, CanonicalizationOptions};
 /// use sha2::Sha256;
 /// use std::io::Cursor;
-
+///
 /// let input = r#"_:e0 <http://example.org/vocab#next> _:e1 _:g .
 /// _:e0 <http://example.org/vocab#prev> _:e2 _:g .
 /// _:e1 <http://example.org/vocab#next> _:e2 _:g .
@@ -730,7 +730,7 @@ pub fn relabel_quads(
         .collect()
 }
 
-fn relabel_quad(
+pub fn relabel_quad(
     q: QuadRef,
     issued_identifiers_map: &HashMap<String, String>,
 ) -> Result<Quad, CanonicalizationError> {
@@ -742,7 +742,7 @@ fn relabel_quad(
     ))
 }
 
-fn relabel_triple(
+pub fn relabel_triple(
     t: TripleRef,
     issued_identifiers_map: &HashMap<String, String>,
 ) -> Result<Triple, CanonicalizationError> {
@@ -753,7 +753,7 @@ fn relabel_triple(
     ))
 }
 
-fn relabel_subject(
+pub fn relabel_subject(
     s: SubjectRef,
     issued_identifiers_map: &HashMap<String, String>,
 ) -> Result<Subject, CanonicalizationError> {
@@ -768,7 +768,7 @@ fn relabel_subject(
     }
 }
 
-fn relabel_term(
+pub fn relabel_term(
     o: TermRef,
     issued_identifiers_map: &HashMap<String, String>,
 ) -> Result<Term, CanonicalizationError> {
@@ -783,7 +783,7 @@ fn relabel_term(
     }
 }
 
-fn relabel_graph_name(
+pub fn relabel_graph_name(
     g: GraphNameRef,
     issued_identifiers_map: &HashMap<String, String>,
 ) -> Result<GraphName, CanonicalizationError> {
@@ -798,7 +798,7 @@ fn relabel_graph_name(
     }
 }
 
-fn relabel_blank_node(
+pub fn relabel_blank_node(
     b: BlankNodeRef,
     issued_identifiers_map: &HashMap<String, String>,
 ) -> Result<BlankNode, CanonicalizationError> {
